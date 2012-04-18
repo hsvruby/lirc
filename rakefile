@@ -1,0 +1,22 @@
+require File.expand_path('../config/application', __FILE__)
+PakyowApplication::Application.stage(ENV['ENV'])
+
+namespace :db do
+  desc "Run migrations"
+  task :migrate do
+    flags = "-M #{v}" if v = ENV['VERSION']
+    opts = PakyowApplication::Application::DB.opts
+    `sequel -m migrations #{"#{opts[:adapter]}://#{opts[:database]}"} #{flags}`
+  end
+  
+  desc "Deletes the database and runs migrations"
+  task :reset do
+    opts  = PakyowApplication::Application::DB.opts
+    db    = opts[:database]
+    FileUtils.rm(db) if File.exists?(db)
+  
+    %w(db:migrate).each { |t| 
+      Rake::Task[t].invoke
+    }
+  end
+end

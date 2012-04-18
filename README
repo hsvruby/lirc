@@ -1,0 +1,29 @@
+# Introduction
+
+TODO: write a fancy app description
+
+# Getting Started
+
+1. Install dependencies via bundler:
+
+bundle install
+
+2. Run migrations:
+
+rake db:migrate
+
+3. Start the server (through bundler):
+
+bundle exec pakyow server
+
+4. You'll find the application running here: http://localhost:3000
+
+# Next Steps
+
+The following resources might be handy:
+
+Pakyow Manual:
+http://pakyow.com/manual
+
+LIRC Code:
+http://github.com/hsvruby/lirc
