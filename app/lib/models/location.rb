@@ -12,5 +12,5 @@
 #   DateTime :updated_at
 
 class Location < Sequel::Model(:locations)
-  many_to_one :messages
+  one_to_many :messages
 end

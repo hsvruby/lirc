@@ -12,5 +12,5 @@
 
 class Message < Sequel::Model(:messages)
   many_to_one :users
-  one_to_many :locations
+  many_to_one :locations
 end
