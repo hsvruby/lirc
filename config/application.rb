@@ -10,7 +10,11 @@ module PakyowApplication
   
     configure(:development) do
       # establish the database connection
-      ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+      if defined?(JRUBY_VERSION)
+        ::DB = Sequel.connect('jdbc:sqlite:development.db') unless defined?(DB)
+      else
+        ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+      end
     end
     
     routes do

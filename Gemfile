@@ -2,9 +2,11 @@ source "http://rubygems.org"
 
 gem "pakyow", "~>0.7"
 gem "thin", :platforms => :mri
-gem "mongrel", :platforms => :jruby
+gem "puma", :platforms => :jruby
+gem "jruby-openssl", :platforms => :jruby
 gem "sequel"
 
 group :development do  
-  gem "sqlite3"
+  gem "sqlite3", :platforms => :mri
+  gem "jdbc-sqlite3", :platforms => :jruby
 end
