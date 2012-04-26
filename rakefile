@@ -6,13 +6,14 @@ namespace :db do
   task :migrate do
     flags = "-M #{v}" if v = ENV['VERSION']
     opts = PakyowApplication::Application::DB.opts
-    `sequel -m migrations #{"#{opts[:adapter]}://#{opts[:database]}"} #{flags}`
+    conn_str = defined?(JRUBY_VERSION) ? opts[:uri] : "#{opts[:adapter]}://#{opts[:database]}"
+    `sequel -m migrations #{conn_str} #{flags}`
   end
   
   desc "Deletes the database and runs migrations"
   task :reset do
     opts  = PakyowApplication::Application::DB.opts
-    db    = opts[:database]
+    db    = defined?(JRUBY_VERSION) ? opts[:uri].gsub("jdbc:sqlite:", "") : opts[:database]
     FileUtils.rm(db) if File.exists?(db)
   
     %w(db:migrate).each { |t| 
