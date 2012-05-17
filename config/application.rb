@@ -12,7 +12,11 @@ module PakyowApplication
       # establish the database connection
 
       # SQLite (haversine query doesn't work)
-      # ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+      # if defined?(JRUBY_VERSION)
+      #   ::DB = Sequel.connect('jdbc:sqlite:development.db') unless defined?(DB)
+      # else
+      #   ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+      # end
 
       # MySQL
       ::DB = Sequel.connect("mysql://root@localhost/lirc") unless defined?(DB)

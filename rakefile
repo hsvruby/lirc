@@ -14,7 +14,7 @@ namespace :db do
   desc "Deletes the database and runs migrations"
   task :reset do
     opts  = PakyowApplication::Application::DB.opts
-    db    = opts[:database]
+    db    = defined?(JRUBY_VERSION) ? opts[:uri].gsub("jdbc:sqlite:", "") : opts[:database]
     FileUtils.rm(db) if File.exists?(db)
   
     %w(db:migrate).each { |t| 
