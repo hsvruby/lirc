@@ -1,3 +1,5 @@
+require 'open-uri'
+
 require File.expand_path('../config/application', __FILE__)
 PakyowApplication::Application.stage(ENV['ENV'])
 
@@ -6,7 +8,7 @@ namespace :db do
   task :migrate do
     flags = "-M #{v}" if v = ENV['VERSION']
     opts = PakyowApplication::Application::DB.opts
-    `sequel -m migrations #{"#{opts[:adapter]}://#{opts[:database]}"} #{flags}`
+    `sequel -m migrations #{"#{opts[:adapter]}://#{opts[:user]}@#{opts[:host]}/#{opts[:database]}"} #{flags}`
   end
   
   desc "Deletes the database and runs migrations"
@@ -18,5 +20,70 @@ namespace :db do
     %w(db:migrate).each { |t| 
       Rake::Task[t].invoke
     }
+  end
+
+  desc "Creates messages from twitter posts around huntsville"
+  task :make_data do
+    Twitter.configure do |config|
+      config.consumer_key = 'dSSh15Zwrv25FBohM1D1kA'
+      config.consumer_secret = 'pnRXh6HikoqePs8Benjd2DO6W2TmDFHKac06fdkYOI'
+      config.oauth_token = '5965462-qrBQv4xYiWbtVuGDBPit4hY9vcRGAXzrzhqv0H5Y'
+      config.oauth_token_secret = 'IqV0UiSh8zQZF0X6iCUe7xUCNFMZA0fc0boX5AJBF0'
+    end
+
+    statuses = []
+    Twitter.search('', rpp: 100, geocode: '34.65,-86.77,10mi', result_type: 'recent').map {|s|
+      if s.geo
+        statuses << s
+        Twitter.user_timeline(s.from_user).map {|s2|
+          statuses << s2 if s2.geo
+        }
+      end
+    }
+    
+    statuses.each {|s|
+      next unless s.from_user
+      u_data = {twitter_username: s.from_user}
+      unless u = User.first(u_data)
+        u = User.create(u_data)
+      end
+
+      l_data = {lat: s.geo.lat, lng: s.geo.lng}
+      unless l = Location.first(l_data)
+        l = Location.create(l_data)
+      end
+
+      m = Message.new(text: s.text)
+      m.user = u
+      m.location = l
+      m.save
+    }
+  end
+end
+
+namespace :api do
+  namespace :users do
+    task :create, :uname do |t,args|
+      puts `curl -i -d "twitter_username=#{args[:uname]}" http://localhost:3000/users`
+    end
+
+    task :auth, :uname do |t,args|
+      puts `curl -i -d "twitter_username=#{args[:uname]}" http://localhost:3000/users/auth`
+    end
+  end
+
+  namespace :messages do
+    task :create, :token, :text, :lat, :lng do |t,args|
+      puts `curl -i -d "access_token=#{args[:token]}&text=#{args[:text]}&lat=#{args[:lat]}&lng=#{URI::encode(args[:lng])}" http://localhost:3000/messages`
+    end
+
+    task :query, :lat, :lng, :rad do |t,args|
+      lat = args[:lat] || 34.65
+      lng = args[:lng] || -86.77
+      rad = args[:rad] || 5
+
+      # http://localhost:3000/messages/?lat=34.65&lng=-86.77&rad=50
+      puts `curl -i http://localhost:3000/messages?lat=#{lat}&lng=#{lng}&rad=#{rad}`
+    end
   end
 end
