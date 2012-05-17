@@ -10,7 +10,12 @@ module PakyowApplication
   
     configure(:development) do
       # establish the database connection
-      ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+
+      # SQLite (haversine query doesn't work)
+      # ::DB = Sequel.connect('sqlite://development.db') unless defined?(DB)
+
+      # MySQL
+      ::DB = Sequel.connect("mysql://root@localhost/lirc") unless defined?(DB)
     end
     
     routes do
