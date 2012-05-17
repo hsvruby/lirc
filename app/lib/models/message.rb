@@ -11,6 +11,8 @@
 #   DateTime :updated_at
 
 class Message < Sequel::Model(:messages)
-  many_to_one :users
-  many_to_one :locations
+  plugin :validation_helpers
+
+  many_to_one :user, :key => :created_by
+  many_to_one :location
 end

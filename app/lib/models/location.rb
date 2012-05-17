@@ -11,6 +11,10 @@
 #   DateTime :created_at
 #   DateTime :updated_at
 
+require 'app/lib/models/message'
+
 class Location < Sequel::Model(:locations)
-  one_to_many :messages
+  plugin :validation_helpers
+
+  one_to_many :messages, :class => Message
 end

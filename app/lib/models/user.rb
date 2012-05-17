@@ -4,7 +4,7 @@
 #   primary_key :id
 #   
 #   String :twitter_username
-#   String :twitter_access_token
+#   String :access_token
 #   
 #   DateTime :created_at
 #   DateTime :updated_at
