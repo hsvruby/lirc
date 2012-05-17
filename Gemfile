@@ -6,8 +6,10 @@ gem "puma", :platforms => :jruby
 gem "jruby-openssl", :platforms => :jruby
 gem "sequel"
 gem "mysql"
+gem "json"
 
 group :development do  
   gem "sqlite3", :platforms => :mri
   gem "jdbc-sqlite3", :platforms => :jruby
+  gem "twitter"
 end

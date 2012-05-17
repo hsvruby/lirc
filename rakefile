@@ -74,7 +74,7 @@ namespace :api do
 
   namespace :messages do
     task :create, :token, :text, :lat, :lng do |t,args|
-      puts `curl -i -d "access_token=#{args[:token]}&text=#{args[:text]}&lat=#{args[:lat]}&lng=#{URI::encode(args[:lng])}" http://localhost:3000/messages`
+      puts `curl -i -d "access_token=#{args[:token]}&text=#{args[:text]}&lat=#{args[:lat]}&lng=#{args[:lng]}" http://localhost:3000/messages`
     end
 
     task :query, :lat, :lng, :rad do |t,args|
