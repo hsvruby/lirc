@@ -9,10 +9,10 @@ require 'json'
 module PakyowApplication
   class Application < Pakyow::Application
     config.app.default_environment = :development
-  
+
     configure(:development) do
       require 'pp'
-      
+
       # establish the database connection
 
       # SQLite (haversine query doesn't work)
@@ -25,7 +25,7 @@ module PakyowApplication
       # MySQL
       ::DB = Sequel.connect("mysql://root@localhost/lirc") unless defined?(DB)
     end
-    
+
     routes do
       handler :bad_request, 400 do
         response.body << {errors: @errors}.to_json
@@ -36,6 +36,8 @@ module PakyowApplication
       end
 
       handler :unauthorized, 401 do
+        response.body << {errors: @errors}.to_json
+        app.halt!
       end
 
       handler :forbidden, 403 do
@@ -43,16 +45,20 @@ module PakyowApplication
 
       # Expects: twitter_username
       # Responds With: user
+      #test with:
+      #curl -X POST --header "Content-Type:application/json" http://localhost:3000/users?twitter_username=supermonkey
+      #responds with access_token and user creation confirmation
       post '/users' do
         u_data = {twitter_username: request.params[:twitter_username]}
-        
+
         unless u = User.first(u_data)
           u = User.new(u_data)
 
           @errors = u.errors and app.invoke_handler! :bad_request unless u.valid?
           u.save
         end
-
+        #we need to specify that we are dealing with application/json data in the Content-type header
+        response.headers['Content-Type'] = 'application/json'
         response.body << u.to_hash.to_json
         app.halt!
       end
@@ -77,7 +83,7 @@ module PakyowApplication
         lng = request.params[:lng]
 
         l = Location.new(lat: lat, lng: lng)
-        
+
         @errors = l.errors and app.invoke_handler! :bad_request unless l.valid?
         l.save
 
@@ -106,7 +112,7 @@ module PakyowApplication
         app.halt!
       end
     end
-    
+
     middleware do
     end
   end
