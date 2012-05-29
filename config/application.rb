@@ -46,7 +46,7 @@ module PakyowApplication
       # Expects: twitter_username
       # Responds With: user
       #test with:
-      #curl -X POST --header "Content-Type:application/json" http://localhost:3000/users?twitter_username=supermonkey
+      #curl -X POST --header "Content-Type:application/json" http://localhost:3000/users?twitter_username=kjay113
       #responds with access_token and user creation confirmation
       post '/users' do
         u_data = {twitter_username: request.params[:twitter_username]}
@@ -69,6 +69,7 @@ module PakyowApplication
         u = User.first(twitter_username: request.params[:twitter_username])
         app.invoke_handler! :unauthorized unless u
 
+        response.headers['Content-Type'] = 'application/json'
         response.body << u.to_hash.to_json
         app.halt!
       end
@@ -93,7 +94,7 @@ module PakyowApplication
 
         @errors = m.errors and app.invoke_handler! :bad_request unless m.valid?
         m.save
-
+        response.headers['Content-Type'] = 'application/json'
         response.body << m.to_hash.to_json
         app.halt!
       end
@@ -108,6 +109,7 @@ module PakyowApplication
         @errors = [] and app.invoke_handler! :bad_request unless lat && lng && rad
 
         ms = Message.proximity(lat, lng, rad)
+        response.headers['Content-Type'] = 'application/json'
         response.body << ms.map{|m| m.to_hash}.to_json
         app.halt!
       end
