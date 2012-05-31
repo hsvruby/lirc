@@ -2,3 +2,4 @@ logs/
 .DS_Store
 development.db
 .rbenv-version
+
