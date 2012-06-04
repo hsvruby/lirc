@@ -18,6 +18,10 @@ bundle exec pakyow server
 
 4. You'll find the application running here: http://localhost:3000
 
+#Test notes:
+#The following will create a new user, returning their access_token
+curl -X POST --header "Content-Type:application/json" http://localhost:3000/users?twitter_username=SirTopperHat
+
 # Next Steps
 
 The following resources might be handy:

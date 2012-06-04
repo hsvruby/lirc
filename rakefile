@@ -32,7 +32,7 @@ namespace :db do
     end
 
     statuses = []
-    Twitter.search('', rpp: 100, geocode: '34.65,-86.77,10mi', result_type: 'recent').map {|s|
+    Twitter.search('', rpp:100, geocode:'34.65,-86.77,10mi', result_type:'recent').map {|s|
       if s.geo
         statuses << s
         Twitter.user_timeline(s.from_user).map {|s2|
